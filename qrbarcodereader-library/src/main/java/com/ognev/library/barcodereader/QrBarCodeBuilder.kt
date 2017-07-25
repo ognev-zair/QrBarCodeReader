@@ -2,6 +2,8 @@ package com.ognev.library.barcodereader;
 
 import android.Manifest
 import android.annotation.TargetApi
+import android.app.Activity
+import android.app.Fragment
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -25,6 +27,7 @@ import java.lang.IllegalStateException
 class QrBarCodeBuilder
 
 private constructor(builder: Builder) {
+  private val PERMISSIONS_REQUEST_CAMERA_ACCESS: Int = 101
   private val LOGTAG = this@QrBarCodeBuilder.toString()
   private var cameraSource: CameraSource? = null
   private var barcodeDetector: BarcodeDetector? = null
@@ -36,6 +39,10 @@ private constructor(builder: Builder) {
   private lateinit var context: Context
   private var surfaceView: SurfaceView? = null
   private var autoFocusEnabled: Boolean = false
+  private var activity: Activity? = null
+  private var activitySupport: ActivityCompat? = null
+  private var fragment: Fragment? = null
+  private var fragmentSupport: android.support.v4.app.Fragment? = null
 
   /**
    * Is camera running boolean.
@@ -92,6 +99,7 @@ private constructor(builder: Builder) {
     }
   }
 
+
   /**
    * Init.
    */
@@ -106,7 +114,30 @@ private constructor(builder: Builder) {
       return
     }
     if (!checkCameraPermission(context)) {
+      if(context is Activity) {
+        activity = context as Activity
+        ActivityCompat.requestPermissions(activity!!,
+            arrayOf(Manifest.permission.CAMERA),
+            PERMISSIONS_REQUEST_CAMERA_ACCESS)
+      }
+
+      if(context is Fragment) {
+        fragment = context as Fragment
+        ActivityCompat.requestPermissions(fragment!!.activity,
+            arrayOf(Manifest.permission.CAMERA),
+            PERMISSIONS_REQUEST_CAMERA_ACCESS)
+      }
+
+      if(context is android.support.v4.app.Fragment) {
+        fragmentSupport = context as android.support.v4.app.Fragment
+        ActivityCompat.requestPermissions(fragmentSupport!!.activity,
+            arrayOf(Manifest.permission.CAMERA),
+            PERMISSIONS_REQUEST_CAMERA_ACCESS)
+      }
+
       Log.e(LOGTAG, "Do not have camera permission!")
+
+
       return
     }
 
@@ -152,7 +183,8 @@ private constructor(builder: Builder) {
   private fun startCameraView(context: Context, cameraSource: CameraSource?,
       surfaceView: SurfaceView?) {
     if (isCameraRunning) {
-      throw IllegalStateException("Camera already started!")
+      return
+//      throw IllegalStateException("Camera already started!")
     }
     try {
       if (ActivityCompat.checkSelfPermission(context,
