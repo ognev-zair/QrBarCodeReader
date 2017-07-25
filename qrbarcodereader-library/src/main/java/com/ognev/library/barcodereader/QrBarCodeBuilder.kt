@@ -13,13 +13,19 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.View
 import android.view.ViewTreeObserver
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import com.google.android.gms.vision.CameraSource
 import com.google.android.gms.vision.Detector
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
+import kotlinx.android.synthetic.main.camera_view.view.line
 import java.io.IOException
 import java.lang.Exception
-import java.lang.IllegalStateException
+import android.view.animation.LinearInterpolator
+import android.view.animation.TranslateAnimation
+
+
 
 /**
  * QrBarCodeBuilder Singleton.
@@ -37,7 +43,7 @@ private constructor(builder: Builder) {
   private val facing: Int
   private val qrBarCodeDataListener: QrBarCodeListener?
   private lateinit var context: Context
-  private var surfaceView: SurfaceView? = null
+  private var surfaceView: QrSurfaceView? = null
   private var autoFocusEnabled: Boolean = false
   private var activity: Activity? = null
   private var activitySupport: ActivityCompat? = null
@@ -54,7 +60,7 @@ private constructor(builder: Builder) {
 
   private var surfaceCreated = false
 
-  fun initAndStart(surfaceView: SurfaceView) {
+  fun initAndStart(surfaceView: QrSurfaceView) {
 
     surfaceView.viewTreeObserver
         .addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
@@ -70,7 +76,7 @@ private constructor(builder: Builder) {
     override fun surfaceCreated(surfaceHolder: SurfaceHolder) {
       //we can start barcode after after creating
       surfaceCreated = true
-      startCameraView(context, cameraSource, surfaceView)
+      startCameraView(context, cameraSource, surfaceView!!.findViewById(R.id.surface_view))
     }
 
     override fun surfaceChanged(surfaceHolder: SurfaceHolder, i: Int, i1: Int, i2: Int) {}
@@ -172,10 +178,12 @@ private constructor(builder: Builder) {
     if (surfaceView != null && surfaceHolderCallback != null) {
       //if surface already created, we can start camera
       if (surfaceCreated) {
-        startCameraView(context, cameraSource, surfaceView!!)
+        startCameraView(context, cameraSource,
+            surfaceView!!.findViewById<SurfaceView>(R.id.surface_view))
       } else {
         //startCameraView will be invoke in void surfaceCreated
-        surfaceView!!.holder.addCallback(surfaceHolderCallback)
+        surfaceView!!.findViewById<SurfaceView>(R.id.surface_view)
+            .holder.addCallback(surfaceHolderCallback)
       }
     }
   }
@@ -259,7 +267,7 @@ private constructor(builder: Builder) {
    * @param qrBarCodeDataListener
    * *     the qr data listener
    */
-  ( val context: Context,  val surfaceView: SurfaceView,
+  ( val context: Context,  val surfaceView: QrSurfaceView,
        val qrBarCodeDataListener: QrBarCodeListener) {
      var autofocusEnabled: Boolean = false
      var width: Int = 0

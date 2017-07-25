@@ -7,8 +7,8 @@ import android.support.v4.app.ActivityCompat
 import com.google.android.gms.vision.barcode.BarcodeDetector
 import com.ognev.library.barcodereader.QrBarCodeBuilder
 import com.ognev.library.barcodereader.QrBarCodeBuilder.QrBarCodeListener
+import kotlinx.android.synthetic.main.activity_main.qr_view
 import kotlinx.android.synthetic.main.activity_main.result
-import kotlinx.android.synthetic.main.activity_main.surface_view
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,26 +18,26 @@ class MainActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
-    qrBarcodeReader = QrBarCodeBuilder.Builder(this, surface_view, object : QrBarCodeListener {
+    qrBarcodeReader = QrBarCodeBuilder.Builder(this, qr_view, object : QrBarCodeListener {
       override fun onDetected(data: String) {
         runOnUiThread { result.text = data }
       }
     } ).facing(QrBarCodeBuilder.BACK_CAM)
         .enableAutofocus(true)
-        .height(surface_view.height)
-        .width(surface_view.width).build()
+        .height(qr_view.height)
+        .width(qr_view.width).build()
 
   }
 
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
       grantResults: IntArray) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    qrBarcodeReader!!.initAndStart(surface_view)
+    qrBarcodeReader!!.initAndStart(qr_view)
   }
 
   override fun onResume() {
     super.onResume()
-    qrBarcodeReader!!.initAndStart(surface_view)
+    qrBarcodeReader!!.initAndStart(qr_view)
   }
 
   override fun onPause() {

@@ -9,8 +9,8 @@
     tools:context="com.ognev.kotlin.barcode.reader.MainActivity"
     >
 
-  <SurfaceView
-      android:id="@+id/surface_view"
+  <com.ognev.library.barcodereader.QrSurfaceView
+      android:id="@+id/qr_view"
       android:layout_width="match_parent"
       android:layout_height="400dp"
       />
