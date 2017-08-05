@@ -19,6 +19,10 @@ android {
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
   }
+
+  defaultConfig {
+    vectorDrawables.useSupportLibrary = true
+  }
 }
 
 dependencies {
@@ -31,6 +35,10 @@ dependencies {
   testCompile 'junit:junit:4.12'
   compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
   compile project(':qrbarcodereader-library')
+
+  debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
+  releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+  testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
 }
 repositories {
   mavenCentral()

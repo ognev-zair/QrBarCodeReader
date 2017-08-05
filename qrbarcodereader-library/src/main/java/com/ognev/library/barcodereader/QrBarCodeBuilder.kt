@@ -6,7 +6,9 @@ import android.app.Activity
 import android.app.Fragment
 import android.content.Context
 import android.content.pm.PackageManager
+import android.hardware.Camera
 import android.os.Build
+import android.support.annotation.NonNull
 import android.support.v4.app.ActivityCompat
 import android.util.Log
 import android.view.SurfaceHolder
@@ -24,7 +26,7 @@ import java.io.IOException
 import java.lang.Exception
 import android.view.animation.LinearInterpolator
 import android.view.animation.TranslateAnimation
-
+import android.widget.ImageView
 
 
 /**
@@ -166,10 +168,13 @@ private constructor(builder: Builder) {
           .setFacing(facing)
           .setRequestedPreviewSize(width, height)
           .build()
+
     } else {
       Log.e(LOGTAG, "Barcode recognition libs are not downloaded and are not operational")
     }
   }
+
+
 
   /**
    * Start scanning qr codes.
@@ -188,6 +193,53 @@ private constructor(builder: Builder) {
     }
   }
 
+  private var camera: Camera? = null
+  private var flashmode = false
+  public fun switchOnOffFlash() {
+    if (camera != null) {
+      try {
+        val param = camera!!.parameters
+        param.flashMode = if (!flashmode) Camera.Parameters.FLASH_MODE_TORCH else Camera.Parameters.FLASH_MODE_OFF
+        camera!!.parameters = param
+        flashmode = !flashmode
+        if (flashmode) {
+//          showToast("Flash Switched ON")
+        } else {
+//          showToast("Flash Switched Off")
+        }
+      } catch (e: Exception) {
+        e.printStackTrace()
+      }
+
+    }
+  }
+
+  public fun isFlashOn(): Boolean {
+    return flashmode;
+  }
+
+  private fun getCamera(cameraSource: CameraSource): Camera? {
+    val declaredFields = CameraSource::class.java.declaredFields
+
+    for (field in declaredFields) {
+      if (field.type == Camera::class.java) {
+        field.isAccessible = true
+        try {
+          val camera = field.get(cameraSource) as Camera
+          if (camera != null) {
+            return camera
+          }
+          return null
+        } catch (e: IllegalAccessException) {
+          e.printStackTrace()
+        }
+
+        break
+      }
+    }
+    return null
+  }
+
   private fun startCameraView(context: Context, cameraSource: CameraSource?,
       surfaceView: SurfaceView?) {
     if (isCameraRunning) {
@@ -200,6 +252,7 @@ private constructor(builder: Builder) {
         Log.e(LOGTAG, "Permission not granted!")
       } else if (!isCameraRunning && cameraSource != null && surfaceView != null) {
         cameraSource.start(surfaceView.holder)
+        camera = getCamera(cameraSource)
         isCameraRunning = true
       }
     } catch (ie: IOException) {

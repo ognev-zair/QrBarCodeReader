@@ -1,14 +1,18 @@
 package com.ognev.kotlin.barcode.reader
 
-import android.Manifest
+import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
-import com.google.android.gms.vision.barcode.BarcodeDetector
 import com.ognev.library.barcodereader.QrBarCodeBuilder
 import com.ognev.library.barcodereader.QrBarCodeBuilder.QrBarCodeListener
+//import kotlinx.android.synthetic.main.activity_main.camera_toggle
 import kotlinx.android.synthetic.main.activity_main.qr_view
 import kotlinx.android.synthetic.main.activity_main.result
+import kotlinx.android.synthetic.main.activity_main.toggle_flash
+
+//import com.sun.javafx.application.ParametersImpl.getParameters
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,6 +21,7 @@ class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
+//    EasyFlashlight.init(this)
 
     qrBarcodeReader = QrBarCodeBuilder.Builder(this, qr_view, object : QrBarCodeListener {
       override fun onDetected(data: String) {
@@ -27,9 +32,20 @@ class MainActivity : AppCompatActivity() {
         .height(qr_view.height)
         .width(qr_view.width).build()
 
+
+    toggle_flash.setOnClickListener {
+      if(!qrBarcodeReader!!.isFlashOn()) {
+        toggle_flash.setColorFilter(Color.argb(255, 255, 255, 255))
+      } else{
+        toggle_flash.setColorFilter(Color.parseColor("#FFDA44"))
+      }
+      qrBarcodeReader!!.switchOnOffFlash() }
+
   }
 
-  override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
+
+
+  override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
       grantResults: IntArray) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     qrBarcodeReader!!.initAndStart(qr_view)

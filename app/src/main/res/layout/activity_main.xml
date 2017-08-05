@@ -9,11 +9,33 @@
     tools:context="com.ognev.kotlin.barcode.reader.MainActivity"
     >
 
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      >
   <com.ognev.library.barcodereader.QrSurfaceView
       android:id="@+id/qr_view"
       android:layout_width="match_parent"
       android:layout_height="400dp"
       />
+
+  <ImageView
+      app:srcCompat="@drawable/ic_automatic_flash"
+      android:id="@+id/toggle_flash"
+      android:layout_margin="16dp"
+      android:padding="10dp"
+      android:layout_gravity="bottom|right"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      />
+  </FrameLayout>
+  <!--<Button-->
+      <!--android:id="@+id/camera_toggle"-->
+      <!--android:layout_width="wrap_content"-->
+      <!--android:layout_height="wrap_content"-->
+      <!--android:text="TOGGLE FLASHLIGHT"-->
+      <!--android:layout_gravity="center"-->
+      <!--android:layout_centerInParent="true"/>-->
 
   <TextView
       android:id="@+id/result"
